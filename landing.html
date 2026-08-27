@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <title>18+</title>
+    <link rel="stylesheet" href="landing.css" />
+  </head>
+  <body>
+    <main>
+      <section class="hero" aria-label="18+">
+        <div class="hero-noise"></div>
+        <div class="hero-content">
+          <h1 class="age-mark" aria-label="18 плюс">18<span>+</span></h1>
+          <p class="hero-caption">Тебе теперь можно.</p>
+        </div>
+        <a class="scroll-hint" href="#memory-one" aria-label="Листать дальше">
+          <span>ЛИСТАЙ НИЖЕ</span>
+          <span class="arrow">↓</span>
+        </a>
+      </section>
+
+      <section class="memory-section" id="memory-one">
+        <div class="memory-grid reveal-group">
+          <figure class="photo-frame reveal from-left">
+            <div class="photo-placeholder">
+              <span>ФОТО 01</span>
+              <small>сюда поставим нужную фотку</small>
+            </div>
+          </figure>
+
+          <div class="memory-copy reveal from-right">
+            <p class="eyebrow">01 / 18 ЛЕТ ЭТОГО УЖАСА</p>
+            <h2>Георгий Таран.</h2>
+            <p>
+              Здесь будет первая короткая история, поздравление или локальный прикол.
+              Текста немного — сайт должен дышать, а фотка работать вместе с ним.
+            </p>
+            <p class="muted">Да, ты действительно дожил до этого момента.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="memory-section memory-section--reverse">
+        <div class="memory-grid reveal-group">
+          <div class="memory-copy reveal from-left">
+            <p class="eyebrow">02 / АРХИВ КОМПРОМАТА</p>
+            <h2>Некоторые вещи лучше не объяснять.</h2>
+            <p>
+              Здесь второй кусок текста. Можно сделать его более упоротым, вставить
+              конкретную историю, цитату из переписки или какую-нибудь древнюю шутку,
+              понятную только вам двоим.
+            </p>
+            <p class="muted">Контекст намеренно не предоставляется.</p>
+          </div>
+
+          <figure class="photo-frame reveal from-right">
+            <div class="photo-placeholder photo-placeholder--alt">
+              <span>ФОТО 02</span>
+              <small>второй прекрасный компромат</small>
+            </div>
+          </figure>
+        </div>
+      </section>
+
+      <section class="bridge-section reveal">
+        <p>Но вообще-то я кое-что для тебя сделал.</p>
+        <strong>Вернее… пытался.</strong>
+      </section>
+
+      <section class="video-section" id="intro-video">
+        <div class="video-heading reveal">
+          <span class="eyebrow">ПЕРЕД ТЕМ КАК МЫ НАЧНЁМ</span>
+          <h2>Посмотри это.</h2>
+        </div>
+
+        <div class="video-shell reveal">
+          <video id="birthday-video" controls playsinline preload="metadata">
+            <source src="assets/video/intro.mp4" type="video/mp4" />
+            Твой браузер почему-то не умеет показывать видео. Ужас.
+          </video>
+          <div class="video-missing" id="video-missing">
+            <span>INTRO.MP4</span>
+            <small>Положи видео в assets/video/intro.mp4</small>
+          </div>
+        </div>
+
+        <div class="launch-overlay" id="launch-overlay" aria-hidden="true">
+          <div>
+            <span class="launch-kicker">PROJECT G.O.S.H.A</span>
+            <strong>ИГРА ЗАПУЩЕНА</strong>
+          </div>
+        </div>
+
+        <a class="fallback-link" id="fallback-link" href="Index.html">Запустить игру вручную →</a>
+      </section>
+    </main>
+
+    <script src="landing.js"></script>
+  </body>
+</html>
