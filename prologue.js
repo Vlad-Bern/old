@@ -15,7 +15,7 @@ Object.assign(window.story, {
     _.horror("unknown", "ГОША...."),
     _.horror("unknown", "Гоша... Эй, ты слышишь?"),
 
-    _.bg("ruins_blur.webp"),
+    _.bg("begining_yuno.webp"),
     _.say("unknown", "У нас всё... Пошло не по плану, верно?"),
 
     _.bg("ruins_view.webp"),
@@ -29,7 +29,7 @@ Object.assign(window.story, {
 
     _.say("hero", "Юно, ты же не хочешь сказать, что..."),
 
-    _.music("villain_theme.mp3"),
+    _.bg("begining_yunoAngry"),
     _.say("unknown", "О, вы всё ещё живы, толстяки?"),
 
     _.thought("*Чья-то тень появилась.. Это он... Он нашёл нас.*"),
@@ -39,14 +39,16 @@ Object.assign(window.story, {
     _.thought("*Она впихивает око мне в руки и отталкивает*"),
 
     _.cam("quake"),
-    _.bg("falling_sky.webp"),
+    _.bg("begining_GoshaFalling.webp"),
 
-    _.thought("*Я падаю со здания и приземляюсь на ноги.*"),
+    _.thought("*Я падаю со здания.*"),
     _.say("hero", "ЮНО!!!!"),
 
     _.cam("flash"),
-    _.bg("street_portal.webp"),
+    _.bg("begining_GoshaGlases.webp"),
+    _.say("hero", "Я преземлился на ноги"),
     _.thought("*Забудь об эмоциях...*"),
+    _.bg("begining_portal.webp"),
     _.thought("*Вижу портал, бегу к нему.*"),
     _.thought("*Око Владбера бьётся в моей руке, словно живое сердце.*"),
 
@@ -55,6 +57,7 @@ Object.assign(window.story, {
 
   // === СЦЕНА 2: ПОДГОТОВКА ===
   prologue_fight_preparations: [
+    _.bg("begining_portalGolems.webp"),
     _.thought("*Но 3 стражника перегородили путь.....*"),
     _.say("hero", "Пошли вон, нитожества", "prologue_qte_sequence"),
   ],
@@ -83,6 +86,7 @@ Object.assign(window.story, {
       ..._.bg("black.webp"), // Темный экран при смерти
       ..._.thought("*Спатанство, я всрал...*"),
     },
+    _.bg("begining_portalGolems.webp"),
     _.thought(
       "*Соберись Гоша Дэр, это проще лёгкого.*",
       "prologue_qte_sequence",
@@ -91,8 +95,7 @@ Object.assign(window.story, {
 
   prologue_win: [
     {
-      ..._.bg("portal_enter.webp"),
-      ..._.music("victory_short.mp3"),
+      ..._.bg("begining_GoshaHimurama.webp"),
       ..._.say("hero", "Химукама кагура спасла."), // Сленг оставляем как есть
     },
     _.thought("*Вот я и у портала...*"),
@@ -103,10 +106,9 @@ Object.assign(window.story, {
     _.bg("ruins_destroyed.webp"), // Фон разрушений
     _.music("sad_piano.mp3"),
 
-    _.thought("*Юно уже нет... Вернее остались лишь останки...*"),
+    _.thought("*Юно...*"),
     _.thought("*Миру конец... И этот псих идёт ко мне навстречу*"),
 
-    _.show("villain"),
     _.say(
       "villain",
       "Ты со своей яндеркой упорно верите в возможность изменить судьбу?",
@@ -136,7 +138,6 @@ Object.assign(window.story, {
     _.thought("*Где я?*"),
 
     {
-      ..._.bg("black.webp"),
       ..._.music("void_whispers.mp3"), // Пусть шепот продолжается
       ..._.thought("*Сознание уплывает...*"),
     },
@@ -146,7 +147,6 @@ Object.assign(window.story, {
 
     // Тишина перед сменой обстановки
     {
-      ..._.bg("black.webp"),
       ..._.music("stop"), // Выключаем звук
       ..._.thought("..."), // Пауза
     },
@@ -158,7 +158,6 @@ Object.assign(window.story, {
   // === СОН ===
   prologue_dream: [
     {
-      ..._.bg("black.webp"),
       ..._.music("dream_harp.mp3"),
       ..._.thought("..."),
     },
@@ -180,7 +179,8 @@ Object.assign(window.story, {
     ),
     _.say("hero", "Мы можем шептать друг другу на ухо сколько влезет."),
 
-    _.thought("*Одна из многочисленных тянок садится на меня сверху.*"),
+    _.bg("dream_girl.webp"),
+    _.thought("*Одна из тянок садится на меня сверху.*"),
 
     _.say("dream_girl", "Ну что, Гоша, приступим?"),
 
@@ -206,7 +206,7 @@ Object.assign(window.story, {
 
   // === УТРО 15 ФЕВРАЛЯ ===
   prologue_wakeup: [
-    _.bg("room_morning.webp"),
+    _.bg("gosharoom.webp"),
     _.music("morning_birds.mp3"),
 
     _.anim("hero", "jump"), // Тряска экрана (герой вскочил), спрайта нет
@@ -229,7 +229,6 @@ Object.assign(window.story, {
   prologue_room: [
     {
       // Устанавливаем фон комнаты
-      ..._.bg("gosharoom"), // Убедись, что файл называется именно так в папке bg
       ..._.music("morning_birds.mp3"),
 
       // Исследование с авто-скрытием интерфейса (благодаря обновленному макросу)

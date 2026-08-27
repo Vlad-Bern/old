@@ -1269,7 +1269,7 @@ button:disabled {
   top: 50%;
   transform: translate(-50%, -50%); /* Центрирование */
 
-  background-image: url("assets/bg/main_menu_bg.png"); /* Проверь расширение файла! .png или .jpg? */
+  background-image: url("assets/bg/main_menu_bg.webp"); /* Проверь расширение файла! .png или .jpg? */
   background-size: cover; /* Растянуть на весь блок */
   background-position: center;
   background-repeat: no-repeat;
