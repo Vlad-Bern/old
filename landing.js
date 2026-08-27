@@ -1,3 +1,14 @@
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
+function resetScroll() {
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener('pageshow', resetScroll);
+window.addEventListener('load', resetScroll);
+
 const reveals = document.querySelectorAll('.reveal');
 
 const observer = new IntersectionObserver(
@@ -43,8 +54,8 @@ function launchGame() {
   launchOverlay?.setAttribute('aria-hidden', 'false');
 
   setTimeout(() => {
-    window.location.href = 'Index.html';
-  }, 1350);
+    window.location.href = 'game.html';
+  }, 900);
 }
 
 if (video) {
