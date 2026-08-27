@@ -15,7 +15,6 @@ const observer = new IntersectionObserver(
 reveals.forEach((element) => observer.observe(element));
 
 const ageMark = document.querySelector('.age-mark');
-const heroCaption = document.querySelector('.hero-caption');
 
 window.addEventListener(
   'scroll',
@@ -24,9 +23,6 @@ window.addEventListener(
     if (ageMark) {
       ageMark.style.transform = `scale(${1 + progress * 0.12}) translateY(${-progress * 20}px)`;
       ageMark.style.opacity = String(1 - progress * 0.88);
-    }
-    if (heroCaption) {
-      heroCaption.style.opacity = String(1 - progress * 1.5);
     }
   },
   { passive: true }
@@ -64,7 +60,11 @@ if (video) {
     if (videoMissing) videoMissing.style.display = 'none';
   });
 
-  video.addEventListener('play', () => {
-    fallbackLink?.classList.add('visible');
-  }, { once: true });
+  video.addEventListener(
+    'play',
+    () => {
+      fallbackLink?.classList.add('visible');
+    },
+    { once: true }
+  );
 }
