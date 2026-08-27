@@ -1,0 +1,14 @@
+{
+  "name": "PROJECT GOSHA: LEGENDS",
+  "main": "index.html",
+  "window": {
+    "title": "Project G.O.S.H.A",
+    "icon": "assets/favicon.ico",
+    "width": 1920,
+    "height": 1080,
+    "toolbar": false,
+    "frame": true,
+    "resizable": true,
+    "fullscreen": true
+  }
+}
