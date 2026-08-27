@@ -2,8 +2,485 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=Index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PROJECT GOSHA: LEGENDS</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon"> -->
   </head>
-  <body></body>
+  <body>
+    <div id="game-container">
+      <!-- ФОН -->
+      <div id="background"></div>
+      <div
+        id="click-layer"
+        style="position: absolute; inset: 0; z-index: 5"
+      ></div>
+      <video
+        id="bg-video"
+        loop
+        muted
+        style="
+          display: none;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: -1;
+        "
+      ></video>
+
+      <!-- 1. ДИСКЛЕЙМЕР -->
+      <div id="intro-disclaimer" class="intro-screen">
+        <div class="disclaimer-content">
+          <h1 style="color: #ff3333; margin-bottom: 20px">ВНИМАНИЕ 18+!</h1>
+          <p>
+            Данная игра содержит сцены любви к Гоше, <br />яркие вспышки лювби к
+            Гоше и сложные чувства Юно по отношению к Гоше.
+          </p>
+          <p style="margin-top: 15px; color: #aaa; font-size: 0.9em">
+            Все персонажи и события существуют в реале. <br />Любое совпадение с
+            вымышленными персонажами случайно.
+          </p>
+          <button id="btn-accept-disclaimer" class="intro-btn">
+            Я ПРОЧИТАЛ
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. ИНТРО СТУДИИ (VLADBER PRESENTS) -->
+      <div id="intro-studio" class="intro-screen" style="display: none">
+        <div class="studio-logo">
+          <span class="studio-name">VLADBER</span>
+          <span class="studio-sub">PRESENTS</span>
+        </div>
+      </div>
+
+      <!-- ГЛАВНОЕ МЕНЮ -->
+      <div id="main-menu" class="main-menu-layer">
+        <!-- Фоновая картинка -->
+        <div class="menu-bg"></div>
+
+        <div class="menu-content">
+          <!-- ЛОГОТИП -->
+          <div class="logo-container">
+            <div class="logo-top">PROJECT</div>
+            <div class="logo-main" data-text="Г.О.Ш.А">Г.О.Ш.А</div>
+            <div class="logo-bottom">ЛЕГЕНДЫ</div>
+          </div>
+
+          <!-- КНОПКИ -->
+          <div class="menu-buttons">
+            <button id="mm-newgame" class="menu-btn" style="--i: 1">
+              Начнём с начала
+            </button>
+            <button id="mm-load" class="menu-btn" style="--i: 2">
+              Продолжим
+            </button>
+            <button id="mm-settings" class="menu-btn" style="--i: 3">
+              Настройки
+            </button>
+            <button
+              id="btn-exit"
+              class="menu-btn"
+              onclick="exitGameWithAnimation()"
+            >
+              Пошло вон
+            </button>
+            <div class="fake-equalizer">
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </div>
+            <!-- Подставка -->
+            <div class="equalizer-base">
+              <span class="base-text">G.O.S.H.A</span>
+              <div class="base-line"></div>
+            </div>
+          </div>
+
+          <!-- Автор -->
+          <div class="author-text">v1.0.0 by Vladber</div>
+        </div>
+      </div>
+
+      <!-- ПЕРСОНАЖИ -->
+      <div id="characters"></div>
+
+      <!-- Слой Карты -->
+      <div id="map-layer" style="display: none">
+        <!-- 1. Кнопка назад (если нужна) -->
+        <button id="map-back-btn" class="ui-btn">×</button>
+
+        <!-- 2. ВОТ ЭТОГО ЭЛЕМЕНТА НЕ ХВАТАЕТ! -->
+        <div id="map-locations"></div>
+      </div>
+
+      <!-- ЭФФЕКТЫ -->
+      <div id="vignette-layer"></div>
+
+      <!-- UI СЛОЙ -->
+      <div id="ui-layer">
+        <div id="dialogue-box">
+          <div id="speaker-name"></div>
+          <div id="dialogue-text"></div>
+
+          <!-- Меню кнопок внутри диалога -->
+          <div id="quick-menu">
+            <button id="main-inv-btn" class="ui-btn">🎒 Инвентарь</button>
+            <button id="map-btn" class="ui-btn">🗺️ Карта</button>
+            <button id="save-btn" class="ui-btn">💾 Сохранить</button>
+            <button id="load-btn" class="ui-btn">📂 Загрузить</button>
+            <button id="settings-btn" class="ui-btn">⚙️ Настройки</button>
+            <button id="history-btn" class="ui-btn">📜 История</button>
+            <button
+              id="btn-dialogue-exit"
+              onclick="tryQuitGame()"
+              title="Выйти из игры"
+            >
+              🚪
+            </button>
+          </div>
+        </div>
+
+        <!-- Контейнер для выборов -->
+        <div id="choices-container"></div>
+      </div>
+
+      <!-- БОЕВОЙ ИНТЕРФЕЙС -->
+      <div id="battle-layer" style="display: none">
+        <!-- 1. Зона Врага -->
+        <div id="enemy-area">
+          <div id="enemies-container"></div>
+          <div id="battle-log-enemy"></div>
+        </div>
+
+        <!-- 2. Зона Героя -->
+        <div id="hero-area">
+          <div id="hero-hud">
+            <!-- HP Bar -->
+            <div class="hp-bar-bg">
+              <div id="hero-hp-fill" style="width: 100%"></div>
+            </div>
+            <div id="hero-hp-text">100/100</div>
+
+            <!-- Stamina Bar -->
+            <div class="hp-bar-bg" style="border-color: #aaf; margin-top: 5px">
+              <div
+                id="hero-stamina-fill"
+                style="width: 100%; background: #3498db"
+              ></div>
+            </div>
+            <div style="font-size: 12px; color: #aaf; text-align: center">
+              Энергия
+            </div>
+          </div>
+
+          <!-- 3. Лог боя -->
+          <div id="battle-log">Битва началась!</div>
+
+          <!-- 4. Кнопки действий -->
+          <div id="action-buttons">
+            <button id="btn-ulti" class="action-btn ulti-btn">🔥 УЛЬТА</button>
+            <div class="main-actions">
+              <button id="btn-attack" class="action-btn">⚔️ Атака</button>
+              <button id="btn-defend" class="action-btn">🛡️ Защита</button>
+            </div>
+
+            <!-- Выпадающие меню -->
+            <div class="dropdown-container">
+              <div class="dropdown">
+                <button id="btn-actions-menu" class="action-btn small-btn">
+                  ⚡ Действия ▲
+                </button>
+                <div id="actions-dropdown" class="dropdown-content">
+                  <button id="btn-flee">🏃 Бежать</button>
+                  <button id="btn-surrender">🏳️ Сдаться</button>
+                </div>
+              </div>
+              <div class="dropdown">
+                <button id="btn-inventory-menu" class="action-btn small-btn">
+                  🎒 Инвентарь ▲
+                </button>
+                <div id="inventory-dropdown" class="dropdown-content">
+                  <button id="btn-inv-weapons">Оружие</button>
+                  <button id="btn-inv-potions">Зелья</button>
+                  <button id="btn-inv-items">Предметы</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Конец battle-layer -->
+
+      <!-- МОДАЛЬНОЕ ОКНО ИНВЕНТАРЯ -->
+      <div id="inventory-modal" class="modal" style="display: none">
+        <div class="modal-content">
+          <div
+            class="modal-header"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 1px solid #444;
+              padding-bottom: 10px;
+              margin-bottom: 15px;
+            "
+          >
+            <h2 id="inv-title" style="margin: 0; color: #d4af37">Инвентарь</h2>
+            <span
+              id="inv-close-btn"
+              class="close-btn"
+              style="font-size: 30px; cursor: pointer; color: #aaa"
+              >&times;</span
+            >
+          </div>
+
+          <div
+            id="inv-stats"
+            style="
+              display: flex;
+              justify-content: space-around;
+              background: rgba(0, 0, 0, 0.4);
+              padding: 12px;
+              margin-bottom: 15px;
+              border-radius: 5px;
+              font-weight: bold;
+              font-size: 16px;
+            "
+          >
+            <!-- Сюда JS будет писать статы -->
+          </div>
+
+          <div
+            class="inv-tabs"
+            style="display: flex; gap: 10px; margin-bottom: 15px"
+          >
+            <button
+              onclick="openInventory('weapons')"
+              class="tab-btn"
+              style="
+                flex: 1;
+                padding: 10px;
+                background: #333;
+                color: #ccc;
+                border: 1px solid #555;
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 14px;
+              "
+            >
+              ⚔️ Оружие
+            </button>
+            <button
+              onclick="openInventory('potions')"
+              class="tab-btn"
+              style="
+                flex: 1;
+                padding: 10px;
+                background: #333;
+                color: #ccc;
+                border: 1px solid #555;
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 14px;
+              "
+            >
+              🧪 Зелья
+            </button>
+            <button
+              onclick="openInventory('items')"
+              class="tab-btn"
+              style="
+                flex: 1;
+                padding: 10px;
+                background: #333;
+                color: #ccc;
+                border: 1px solid #555;
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 14px;
+              "
+            >
+              📦 Разное
+            </button>
+          </div>
+
+          <div
+            id="inv-list"
+            style="
+              flex-grow: 1;
+              overflow-y: auto;
+              max-height: 400px;
+              padding-right: 5px;
+              border-top: 1px solid #444;
+              padding-top: 10px;
+            "
+          >
+            <!-- Тут будут предметы -->
+          </div>
+        </div>
+      </div>
+
+      <!-- МОДАЛЬНОЕ ОКНО СОХРАНЕНИЯ/ЗАГРУЗКИ -->
+      <div id="saveload-modal" class="modal" style="display: none">
+        <div class="modal-content" style="width: 700px; max-width: 95%">
+          <div
+            class="modal-header"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 1px solid #444;
+              padding-bottom: 15px;
+              margin-bottom: 20px;
+            "
+          >
+            <h2 id="saveload-title" style="margin: 0; color: #d4af37">
+              Сохранение
+            </h2>
+            <span
+              id="saveload-close-btn"
+              class="close-btn"
+              style="font-size: 30px; cursor: pointer; color: #aaa"
+              >&times;</span
+            >
+          </div>
+          <div id="save-slots-grid" class="save-grid">
+            <!-- Слоты будут генерироваться через JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК -->
+      <div id="settings-modal" class="modal" style="display: none">
+        <div class="modal-content" style="width: 400px">
+          <div
+            class="modal-header"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 1px solid #444;
+              padding-bottom: 10px;
+              margin-bottom: 15px;
+            "
+          >
+            <h2 style="margin: 0; color: #d4af37">Настройки</h2>
+            <span
+              id="settings-close-btn"
+              class="close-btn"
+              style="font-size: 30px; cursor: pointer; color: #aaa"
+              >&times;</span
+            >
+          </div>
+
+          <div class="setting-row" style="margin-bottom: 20px">
+            <label style="display: block; margin-bottom: 5px; color: #ccc"
+              >🔊 Громкость музыки:</label
+            >
+            <input
+              type="range"
+              id="volume-slider"
+              min="0"
+              max="100"
+              value="50"
+              style="width: 100%; cursor: pointer"
+            />
+          </div>
+
+          <div class="setting-row" style="margin-bottom: 20px">
+            <label style="display: block; margin-bottom: 5px; color: #ccc"
+              >🎨 Стиль окна:</label
+            >
+            <select
+              id="theme-select"
+              style="
+                width: 100%;
+                padding: 8px;
+                background: #333;
+                color: white;
+                border: 1px solid #555;
+                border-radius: 4px;
+              "
+            >
+              <option value="default">Стандартный</option>
+              <option value="retro">Ретро</option>
+              <option value="glass">Стекло</option>
+              <option value="gold">Золото</option>
+              <option value="cyber">Неон</option>
+              <option value="yandere">Дневник Будущего</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="qte-layer"></div>
+      <div id="damage-overlay"></div>
+
+      <!-- Контейнер для самого окна истории -->
+      <div id="history-modal" class="modal-overlay" style="display: none">
+        <div class="modal-content history-content">
+          <div class="modal-header">
+            <h3>История диалогов</h3>
+            <span id="history-close-btn" class="close-btn">&times;</span>
+          </div>
+          <div id="history-log-container">
+            <!-- Сюда будет динамически добавляться текст -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ОВЕРЛЕЙ ДЛЯ ЭФФЕКТА ВЫКЛЮЧЕНИЯ (CRT) -->
+      <div id="crt-overlay" class="crt-off-layer"></div>
+
+      <!-- Окно осмотра предмета -->
+      <div id="inspect-modal" class="modal" style="display: none">
+        <div class="inspect-content">
+          <h2 id="inspect-title">Название предмета</h2>
+          <div id="inspect-img-container">
+            <!-- Сюда JS вставит картинку -->
+          </div>
+          <p id="inspect-desc">Описание предмета...</p>
+
+          <div class="inspect-actions">
+            <button id="btn-inspect-take" class="ui-btn">Взять</button>
+            <button id="btn-inspect-close" class="ui-btn">Назад</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Контейнер для всплывашек (Toasts) -->
+      <div id="toast-container"></div>
+
+      <!-- Кастомное окно подтверждения (Confirm) -->
+      <div id="custom-confirm" class="confirm-overlay" style="display: none">
+        <div class="confirm-box">
+          <p id="confirm-message">Уверен?</p>
+          <div class="confirm-buttons">
+            <button id="confirm-yes" class="ui-btn gold-btn">Конечно</button>
+            <button id="confirm-no" class="ui-btn red-btn">Пошёл вон</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- СКРИПТЫ -->
+      <script src="data.js"></script>
+      <script src="engine.js"></script>
+      <script src="battle.js"></script>
+      <script src="game.js"></script>
+      <script src="macros.js"></script>
+      <script src="story.js"></script>
+      <script src="prologue.js"></script>
+    </div>
+  </body>
 </html>
