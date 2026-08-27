@@ -82,9 +82,11 @@ const _ = {
   qteSeq: (sequence, timePerKey, win, fail) => ({
     type: "custom",
     action: () => {
+      // QTE больше не меняет сюжетный фон: на экране остаётся тот кадр,
+      // на котором началась последовательность.
       const fullSequence = sequence.map((s) => ({
         key: s.k || s.key,
-        bg: s.bg ? `${stripExt(s.bg, ".webp")}.webp` : null,
+        time: s.time || null,
       }));
       startQTE(fullSequence, timePerKey, win, fail);
     },
