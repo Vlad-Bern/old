@@ -9,6 +9,44 @@ const normalizeCamName = (name) => {
   return name;
 };
 
+// -----------------------------------------------------------------
+// MEDIA FORMAT COMPATIBILITY
+// Старые вызовы из game.js всё ещё могут просить mp3, но реальные UI-файлы
+// теперь лежат в OGG. Перехватываем только существующие четыре ассета,
+// не трогая потенциальные будущие mp3-SFX.
+// -----------------------------------------------------------------
+(() => {
+  const NativeAudio = window.Audio;
+  const audioAliases = new Map([
+    ["assets/sfx/click.mp3", "assets/sfx/click.ogg"],
+    ["assets/sfx/close.mp3", "assets/sfx/close.ogg"],
+    ["assets/sfx/intro.mp3", "assets/sfx/intro.ogg"],
+    ["assets/music/main_menu_theme.mp3", "assets/music/main_menu_theme.ogg"],
+  ]);
+
+  function MappedAudio(src) {
+    const mappedSrc = typeof src === "string" ? audioAliases.get(src) || src : src;
+    return new NativeAudio(mappedSrc);
+  }
+
+  MappedAudio.prototype = NativeAudio.prototype;
+  Object.setPrototypeOf(MappedAudio, NativeAudio);
+  window.Audio = MappedAudio;
+
+  // story.js загружается после macros.js. После завершения загрузки страницы
+  // переводим старую ссылку на ролик видения на новый WebM-файл.
+  window.addEventListener("DOMContentLoaded", () => {
+    Object.values(window.story || {}).forEach((scene) => {
+      if (!Array.isArray(scene)) return;
+      scene.forEach((step) => {
+        if (step && step.video === "vision_vladber.mp4") {
+          step.video = "second.webm";
+        }
+      });
+    });
+  });
+})();
+
 const _ = {
   say: (speaker, text, next = null) => {
     const obj = { speaker, text, textStyle: "normal" };
@@ -29,7 +67,8 @@ const _ = {
 
   music: (track) => {
     if (!track || track === "stop") return { music: null };
-    return { music: `assets/music/${stripExt(track, ".mp3")}.mp3` };
+    const normalized = stripExt(stripExt(track, ".mp3"), ".ogg");
+    return { music: `assets/music/${normalized}.ogg` };
   },
 
   chapter: (num) => ({ setChapter: num }),
