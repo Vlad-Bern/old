@@ -23,10 +23,7 @@
       <section class="memory-section" id="memory-one">
         <div class="memory-grid reveal-group">
           <figure class="photo-frame reveal from-left" data-lightbox>
-            <div class="photo-placeholder">
-              <span>ФОТО 01</span>
-              <small>сюда поставим нужную фотку</small>
-            </div>
+            <img src="assets/extra/gosha.jpg" alt="Гоша" loading="lazy" />
           </figure>
 
           <div class="memory-copy reveal from-right">
@@ -51,30 +48,26 @@
           </div>
 
           <figure class="photo-frame reveal from-right" data-lightbox>
-            <div class="photo-placeholder photo-placeholder--alt">
-              <span>ФОТО 02</span>
-              <small>второй прекрасный компромат</small>
-            </div>
+            <img src="assets/extra/document.png" alt="Договор" loading="lazy" />
           </figure>
         </div>
       </section>
 
       <section class="video-section" id="intro-video">
         <div class="video-shell reveal">
-          <video id="birthday-video" controls playsinline preload="metadata">
+          <video
+            id="birthday-video"
+            controls
+            playsinline
+            preload="metadata"
+            poster="assets/extra/preview.jpg"
+          >
             <source src="assets/video/first.mp4" type="video/mp4" />
             Твой браузер почему-то не умеет показывать видео.
           </video>
           <div class="video-missing" id="video-missing">
             <span>FIRST.MP4</span>
             <small>Видео должно лежать в assets/video/first.mp4</small>
-          </div>
-        </div>
-
-        <div class="launch-overlay" id="launch-overlay" aria-hidden="true">
-          <div>
-            <span class="launch-kicker">PROJECT G.O.S.H.A</span>
-            <strong>ИГРА ЗАПУЩЕНА</strong>
           </div>
         </div>
 
