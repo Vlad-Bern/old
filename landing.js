@@ -39,10 +39,6 @@ window.addEventListener(
   { passive: true }
 );
 
-// ---------------------------------------------------------------
-// Фото: по клику увеличиваем только реальную <img> внутри photo-frame.
-// Пока стоят заглушки — ничего не открывается и ошибок нет.
-// ---------------------------------------------------------------
 const lightboxStyle = document.createElement('style');
 lightboxStyle.textContent = `
   .photo-frame:has(img) { cursor: zoom-in; }
@@ -120,7 +116,6 @@ document.addEventListener('keydown', (event) => {
 
 const video = document.getElementById('birthday-video');
 const videoMissing = document.getElementById('video-missing');
-const launchOverlay = document.getElementById('launch-overlay');
 const fallbackLink = document.getElementById('fallback-link');
 
 let hasLaunched = false;
@@ -128,13 +123,7 @@ let hasLaunched = false;
 function launchGame() {
   if (hasLaunched) return;
   hasLaunched = true;
-
-  launchOverlay?.classList.add('active');
-  launchOverlay?.setAttribute('aria-hidden', 'false');
-
-  setTimeout(() => {
-    window.location.href = 'game.html';
-  }, 900);
+  window.location.href = 'game.html';
 }
 
 if (video) {
