@@ -171,16 +171,14 @@ console.log("Story core initialized.");
 
 // =================================================================
 // STORY
-//
-// В сюжете намеренно НЕТ подключённых музыкальных и SFX-файлов.
-// Ищи комментарии "MUSIC:" и "SFX:" — это места, куда их стоит поставить.
-// Внутренние prologue_* ID оставлены ради совместимости переходов и сейвов.
+// Музыка теперь прописана прямо в сценарии рядом с нужными сценами.
 // =================================================================
 Object.assign(window.story, {
   start: [
     // MUSIC: 0829
     {
       ..._.bg("black"),
+      ..._.music("0829"),
       ..._.lockUI(),
       ..._.thought("..."),
     },
@@ -195,7 +193,6 @@ Object.assign(window.story, {
     _.give("vladber_eye"),
     _.say("yuno", "Это всевидящее око Владбера."),
     _.say("hero", "Юно, ты же не хочешь сказать, что..."),
-
 
     _.bg("begining_yunoAngry"),
     _.say("unknown", "О, вы всё ещё живы, толстяки?"),
@@ -268,7 +265,6 @@ Object.assign(window.story, {
     _.say("hero", "Я отомщу за Юно."),
     _.thought("*Я прыгнул в портал с полной уверенностью в своей мести.*"),
 
-
     _.bg("black"),
     _.thought(
       "*Затем пустота... Она длилась минут десять. Я слышал лишь странный шёпот.*",
@@ -280,8 +276,11 @@ Object.assign(window.story, {
     _.thought("*Веки становятся тяжёлыми...*"),
     _.thought("..."),
 
-    // MUSIC: invite for a punishment
-    _.bg("dream_harem"),
+    // MUSIC: Invite for a punishment
+    {
+      ..._.bg("dream_harem"),
+      ..._.music("Invite for a punishment"),
+    },
     _.say("girl1", "Гоша Дэр, ты такой сильный."),
     _.say("girl2", "Гошенька, позволь мне нашептать в твоё ухо."),
     _.say("girl3", "Эй, я тоже хочу нашептать в ухо Гоше!"),
@@ -294,7 +293,10 @@ Object.assign(window.story, {
     _.thought("*Она наклоняется к моему уху.*"),
 
     // MUSIC: романтическую музыку ОБОРВАТЬ мгновенно.
-    _.bg("dream_nightmare_face"),
+    {
+      ..._.bg("dream_nightmare_face"),
+      ..._.musicStop(true),
+    },
     _.horror("aida", "Твой стёпа мелкий"),
     _.thought("*Я осознаю, что внезапно эта девушка превратилась в Аиду.*"),
     _.cam("quake"),
@@ -319,6 +321,7 @@ Object.assign(window.story, {
     // MUSIC: Field of Hopes and Dreams
     {
       ..._.bg("gosharoom"),
+      ..._.music("Field of Hopes and Dreams"),
       ..._.explore([
         {
           x: 83,
@@ -426,8 +429,11 @@ Object.assign(window.story, {
       "Вот бы какая-нибудь красивая сталкерша за мной наблюдала...",
     ),
 
-    // MUSIC: здесь лучше резко приглушить до 20–30%, чтобы шёпот пробил сцену.
-    _.bg("classroom_whisper"),
+    // MUSIC: приглушить до 25%, чтобы шёпот пробил сцену.
+    {
+      ..._.bg("classroom_whisper"),
+      ..._.musicVolume(0.25, 250),
+    },
     _.horror("unknown", "А я уже наблюдаю..."),
     _.bg("classroom_fall"),
     _.cam("quake"),
@@ -435,7 +441,10 @@ Object.assign(window.story, {
     _.thought("Я упал прямо на парту и повалился вместе с ней на пол."),
 
     // MUSIC: Юно Гасай Кровь
-    _.bg("classroom_fall2"),
+    {
+      ..._.bg("classroom_fall2"),
+      ..._.music("Юно Гасай Кровь"),
+    },
     _.say("unknown", "Хихи, Гошенька, ты боишься шёпота на ухо?"),
     _.say("hero", "Шёпот... Ты меня напугала..."),
     _.bg("classroom_goshaFace"),
@@ -461,9 +470,12 @@ Object.assign(window.story, {
     _.bg("street_goshaLookBack"),
     _.thought("Я попытался обернуться, чтобы посмотреть, нет ли её сзади."),
 
-    // MUSIC: assets/music/Быть грозой не легко.ogg
+    // MUSIC: Быть грозой не легко
     _.cam("quake"),
-    _.bg("street_groza"),
+    {
+      ..._.bg("street_groza"),
+      ..._.music("Быть грозой не легко"),
+    },
     _.thought("Но тут же врезался в чьё-то маленькое тельце."),
     _.thought("Этот толстяк меня схватил и прижал к сетке."),
     _.bg("street_grozaHand"),
@@ -484,8 +496,11 @@ Object.assign(window.story, {
     _.bg("black"),
     _.thought("Опять темнота... Что за конченый день?!"),
 
-    // MUSIC: Стоп музыка.
-    _.bg("void_eye"),
+    // MUSIC: плавно остановить музыку.
+    {
+      ..._.bg("void_eye"),
+      ..._.musicStop(),
+    },
     _.thought("Какое-то око явилось передо мной."),
     _.thought("Оно пытается мне что-то прошептать?"),
     _.cam("flash"),
