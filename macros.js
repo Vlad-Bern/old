@@ -33,14 +33,75 @@ const normalizeCamName = (name) => {
   Object.setPrototypeOf(MappedAudio, NativeAudio);
   window.Audio = MappedAudio;
 
-  // story.js загружается после macros.js. После завершения загрузки страницы
-  // переводим старую ссылку на ролик видения на новый WebM-файл.
+  function showEndingVideo() {
+    if (window.typeWriterTimeout) {
+      clearTimeout(window.typeWriterTimeout);
+      window.typeWriterTimeout = null;
+    }
+
+    if (window.currentMusic) {
+      window.currentMusic.pause();
+      window.currentMusic.currentTime = 0;
+      window.currentMusic = null;
+    }
+
+    if (window.bgm) {
+      window.bgm.pause();
+      window.bgm.currentTime = 0;
+      window.bgm = null;
+    }
+
+    const bgVideo = document.getElementById("bg-video");
+    if (bgVideo) {
+      bgVideo.pause();
+      bgVideo.removeAttribute("src");
+    }
+
+    const video = document.createElement("video");
+    video.src = "assets/video/second.webm";
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+    video.setAttribute("aria-label", "Финальное видео");
+    video.style.cssText = `
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      object-fit: contain;
+      background: #000;
+      z-index: 2147483647;
+    `;
+
+    video.addEventListener("ended", () => {
+      window.location.href = "final.html";
+    });
+
+    document.documentElement.style.background = "#000";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.margin = "0";
+    document.body.style.background = "#000";
+    document.body.style.overflow = "hidden";
+    document.body.replaceChildren(video);
+  }
+
+  // В старом story.js финальное видео записано как служебный объект video,
+  // который движок сам не умеет показывать. После загрузки story.js заменяем
+  // этот шаг на настоящий финал: игра исчезает, second.webm ждёт ручного Play,
+  // а после окончания открывается final.html.
   window.addEventListener("DOMContentLoaded", () => {
     Object.values(window.story || {}).forEach((scene) => {
       if (!Array.isArray(scene)) return;
-      scene.forEach((step) => {
+
+      scene.forEach((step, index) => {
         if (step && step.video === "vision_vladber.mp4") {
-          step.video = "second.webm";
+          scene[index] = {
+            type: "custom",
+            text: " ",
+            hideUI: true,
+            action: showEndingVideo,
+          };
         }
       });
     });
