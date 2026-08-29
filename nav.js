@@ -115,9 +115,20 @@
     finalVideo.addEventListener("ended", markUnlocked, { once: true });
   }
 
+  function loadGameFixes() {
+    if (!document.getElementById("game-container")) return;
+    if (document.querySelector('script[data-game-fixes]')) return;
+
+    const script = document.createElement("script");
+    script.src = "game-fixes.js";
+    script.dataset.gameFixes = "1";
+    document.body.appendChild(script);
+  }
+
   function init() {
     bindFinalVideo();
     mountBurger();
+    loadGameFixes();
   }
 
   window.GoshaNav = { markUnlocked, mountBurger };
