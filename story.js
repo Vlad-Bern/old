@@ -353,7 +353,7 @@ Object.assign(window.story, {
           h: 25,
           item: "figures",
           name: "Какие-то фигурки",
-          desc: "Мои вайфу охраняют полку.",
+          desc: "Юно скачет на Синдзи, а Аска легла под Юкитеру",
           canTake: false,
           failMsg: "Иди в колледж, анимешник.",
         },
