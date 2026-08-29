@@ -9,6 +9,16 @@ const normalizeCamName = (name) => {
   return name;
 };
 
+// Общая навигация после полного прохождения финала.
+(() => {
+  if (!document.querySelector('script[data-gosha-nav]')) {
+    const navScript = document.createElement("script");
+    navScript.src = "nav.js";
+    navScript.dataset.goshaNav = "1";
+    document.body.appendChild(navScript);
+  }
+})();
+
 // -----------------------------------------------------------------
 // MEDIA FORMAT COMPATIBILITY
 // Старые вызовы из game.js всё ещё могут просить mp3, но реальные UI-файлы
