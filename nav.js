@@ -1,6 +1,17 @@
 (() => {
   const UNLOCK_KEY = "gosha_final_unlocked";
 
+  function ensureFavicon() {
+    let icon = document.querySelector('link[rel~="icon"]');
+    if (!icon) {
+      icon = document.createElement("link");
+      icon.rel = "icon";
+      document.head.appendChild(icon);
+    }
+    icon.type = "image/x-icon";
+    icon.href = "./favicon.ico";
+  }
+
   function isUnlocked() {
     return localStorage.getItem(UNLOCK_KEY) === "1";
   }
@@ -80,7 +91,7 @@
     const menu = document.createElement("nav");
     menu.id = "gosha-nav-menu";
     menu.innerHTML = `
-      <a href="Index.html">1-я страница</a>
+      <a href="index.html">1-я страница</a>
       <a href="game.html">Игра</a>
       <a href="final.html">2-я страница</a>
     `;
@@ -126,6 +137,7 @@
   }
 
   function init() {
+    ensureFavicon();
     bindFinalVideo();
     mountBurger();
     loadGameFixes();
