@@ -22,8 +22,7 @@ const normalizeCamName = (name) => {
 // -----------------------------------------------------------------
 // MEDIA FORMAT COMPATIBILITY
 // Старые вызовы из game.js всё ещё могут просить mp3, но реальные UI-файлы
-// теперь лежат в OGG. Перехватываем только существующие четыре ассета,
-// не трогая потенциальные будущие mp3-SFX.
+// теперь лежат в OGG. Перехватываем только существующие четыре ассета.
 // -----------------------------------------------------------------
 (() => {
   const NativeAudio = window.Audio;
@@ -46,18 +45,20 @@ const normalizeCamName = (name) => {
   // ---------------------------------------------------------------
   // STORY MUSIC PLAYER
   // По умолчанию: старый трек плавно затухает, затем новый плавно входит.
-  // Спецкоманды позволяют сделать плавный или мгновенный stop и duck volume.
+  // Громкость всегда подчиняется settings.volume из игрового меню.
   // ---------------------------------------------------------------
   let musicTransitionId = 0;
   let musicVolumeMultiplier = 1;
 
-  const getMusicVolume = () => {
-    const base =
-      window.settings && typeof window.settings.volume === "number"
-        ? window.settings.volume
-        : 0.5;
-    return Math.max(0, Math.min(1, base * musicVolumeMultiplier));
+  const getBaseGameVolume = () => {
+    if (typeof settings !== "undefined" && typeof settings.volume === "number") {
+      return settings.volume;
+    }
+    return 1;
   };
+
+  const getMusicVolume = () =>
+    Math.max(0, Math.min(1, getBaseGameVolume() * musicVolumeMultiplier));
 
   const fadeAudio = (audio, from, to, duration, transitionId, onDone = null) => {
     if (!audio) {
@@ -92,12 +93,18 @@ const normalizeCamName = (name) => {
 
   const stopMusicNow = () => {
     musicTransitionId++;
-    const audio = window.currentMusic;
-    if (audio) {
+    const candidates = [window.currentMusic, window.bgm];
+    const seen = new Set();
+
+    candidates.forEach((audio) => {
+      if (!audio || seen.has(audio)) return;
+      seen.add(audio);
       audio.pause();
       audio.currentTime = 0;
-    }
+    });
+
     window.currentMusic = null;
+    window.bgm = null;
     if (typeof state !== "undefined") state.music = null;
   };
 
@@ -112,7 +119,7 @@ const normalizeCamName = (name) => {
 
     if (request === "__MUSIC_STOP__") {
       const transitionId = ++musicTransitionId;
-      const oldAudio = window.currentMusic;
+      const oldAudio = window.currentMusic || window.bgm;
       musicVolumeMultiplier = 1;
 
       if (!oldAudio) {
@@ -120,19 +127,13 @@ const normalizeCamName = (name) => {
         return;
       }
 
-      fadeAudio(
-        oldAudio,
-        oldAudio.volume,
-        0,
-        700,
-        transitionId,
-        () => {
-          oldAudio.pause();
-          oldAudio.currentTime = 0;
-          if (window.currentMusic === oldAudio) window.currentMusic = null;
-          if (typeof state !== "undefined") state.music = null;
-        },
-      );
+      fadeAudio(oldAudio, oldAudio.volume, 0, 700, transitionId, () => {
+        oldAudio.pause();
+        oldAudio.currentTime = 0;
+        if (window.currentMusic === oldAudio) window.currentMusic = null;
+        if (window.bgm === oldAudio) window.bgm = null;
+        if (typeof state !== "undefined") state.music = null;
+      });
       return;
     }
 
@@ -143,26 +144,26 @@ const normalizeCamName = (name) => {
       if (!Number.isFinite(multiplier)) return;
 
       musicVolumeMultiplier = Math.max(0, Math.min(1, multiplier));
-      const audio = window.currentMusic;
+      const audio = window.currentMusic || window.bgm;
       if (!audio) return;
 
       const transitionId = ++musicTransitionId;
-      fadeAudio(
-        audio,
-        audio.volume,
-        getMusicVolume(),
-        duration,
-        transitionId,
-      );
+      fadeAudio(audio, audio.volume, getMusicVolume(), duration, transitionId);
       return;
     }
 
-    if (typeof state !== "undefined" && state.music === request && window.currentMusic) {
+    if (
+      typeof state !== "undefined" &&
+      state.music === request &&
+      (window.currentMusic || window.bgm)
+    ) {
+      const audio = window.currentMusic || window.bgm;
+      audio.volume = getMusicVolume();
       return;
     }
 
     const transitionId = ++musicTransitionId;
-    const oldAudio = window.currentMusic;
+    const oldAudio = window.currentMusic || window.bgm;
     musicVolumeMultiplier = 1;
 
     const startNewTrack = () => {
@@ -172,7 +173,12 @@ const normalizeCamName = (name) => {
       audio.loop = true;
       audio.volume = 0;
       window.currentMusic = audio;
+      window.bgm = audio;
       if (typeof state !== "undefined") state.music = request;
+
+      try {
+        if (typeof activeAudioSet !== "undefined") activeAudioSet.add(audio);
+      } catch (_) {}
 
       audio
         .play()
@@ -187,20 +193,30 @@ const normalizeCamName = (name) => {
       return;
     }
 
-    fadeAudio(
-      oldAudio,
-      oldAudio.volume,
-      0,
-      700,
-      transitionId,
-      () => {
-        oldAudio.pause();
-        oldAudio.currentTime = 0;
-        if (window.currentMusic === oldAudio) window.currentMusic = null;
-        startNewTrack();
-      },
-    );
+    fadeAudio(oldAudio, oldAudio.volume, 0, 700, transitionId, () => {
+      oldAudio.pause();
+      oldAudio.currentTime = 0;
+      try {
+        if (typeof activeAudioSet !== "undefined") activeAudioSet.delete(oldAudio);
+      } catch (_) {}
+      if (window.currentMusic === oldAudio) window.currentMusic = null;
+      if (window.bgm === oldAudio) window.bgm = null;
+      startNewTrack();
+    });
   };
+
+  // Ползунок громкости из game.js меняет settings.volume.
+  // После его собственного обработчика приводим сюжетную музыку к тому же уровню,
+  // сохраняя временное приглушение вроде 25% на сцене с шёпотом.
+  window.addEventListener("DOMContentLoaded", () => {
+    const slider = document.getElementById("volume-slider");
+    if (slider) {
+      slider.addEventListener("input", () => {
+        const audio = window.currentMusic || window.bgm;
+        if (audio) audio.volume = getMusicVolume();
+      });
+    }
+  });
 
   function showEndingVideo() {
     if (window.typeWriterTimeout) {
@@ -209,12 +225,6 @@ const normalizeCamName = (name) => {
     }
 
     stopMusicNow();
-
-    if (window.bgm) {
-      window.bgm.pause();
-      window.bgm.currentTime = 0;
-      window.bgm = null;
-    }
 
     const bgVideo = document.getElementById("bg-video");
     if (bgVideo) {
@@ -251,48 +261,9 @@ const normalizeCamName = (name) => {
     document.body.replaceChildren(video);
   }
 
-  // story.js загружается после macros.js. На DOMContentLoaded расставляем
-  // реальные музыкальные команды по тем местам, которые отмечены MUSIC-комментариями.
+  // Здесь больше НЕТ скрытой расстановки музыки по фонам.
+  // Единственный runtime-патч — старый служебный video-шаг финала.
   window.addEventListener("DOMContentLoaded", () => {
-    const findByBg = (sceneName, bgName) => {
-      const scene = window.story?.[sceneName];
-      if (!Array.isArray(scene)) return null;
-      return scene.find(
-        (step) =>
-          step &&
-          typeof step.bg === "string" &&
-          step.bg.endsWith(`/` + bgName + ".webp"),
-      );
-    };
-
-    const startScene = window.story?.start;
-    if (Array.isArray(startScene) && startScene[0]) {
-      startScene[0].music = "assets/music/0829.ogg";
-    }
-
-    const dreamStart = findByBg("prologue_after_qte", "dream_harem");
-    if (dreamStart) dreamStart.music = "assets/music/Invite for a punishment.ogg";
-
-    const nightmare = findByBg("prologue_after_qte", "dream_nightmare_face");
-    if (nightmare) nightmare.music = "__MUSIC_STOP_IMMEDIATE__";
-
-    const roomScene = window.story?.prologue_room;
-    if (Array.isArray(roomScene) && roomScene[0]) {
-      roomScene[0].music = "assets/music/Field of Hopes and Dreams.ogg";
-    }
-
-    const whisper = findByBg("prologue_outside", "classroom_whisper");
-    if (whisper) whisper.music = "__MUSIC_VOLUME__:0.25:250";
-
-    const yuno = findByBg("prologue_outside", "classroom_fall2");
-    if (yuno) yuno.music = "assets/music/Юно Гасай Кровь.ogg";
-
-    const groza = findByBg("prologue_outside", "street_groza");
-    if (groza) groza.music = "assets/music/Быть грозой не легко.ogg";
-
-    const eye = findByBg("prologue_outside", "void_eye");
-    if (eye) eye.music = "__MUSIC_STOP__";
-
     Object.values(window.story || {}).forEach((scene) => {
       if (!Array.isArray(scene)) return;
 
@@ -392,8 +363,6 @@ const _ = {
   qteSeq: (sequence, timePerKey, win, fail) => ({
     type: "custom",
     action: () => {
-      // QTE больше не меняет сюжетный фон: на экране остаётся тот кадр,
-      // на котором началась последовательность.
       const fullSequence = sequence.map((s) => ({
         key: s.k || s.key,
         time: s.time || null,
