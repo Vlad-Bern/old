@@ -108,11 +108,23 @@
     document.body.append(button, menu);
   }
 
+  function bindFinalVideo() {
+    const finalVideo = document.getElementById("final-video");
+    if (!finalVideo || finalVideo.dataset.unlockBound === "1") return;
+    finalVideo.dataset.unlockBound = "1";
+    finalVideo.addEventListener("ended", markUnlocked, { once: true });
+  }
+
+  function init() {
+    bindFinalVideo();
+    mountBurger();
+  }
+
   window.GoshaNav = { markUnlocked, mountBurger };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mountBurger, { once: true });
+    document.addEventListener("DOMContentLoaded", init, { once: true });
   } else {
-    mountBurger();
+    init();
   }
 })();
